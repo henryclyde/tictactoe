@@ -1,0 +1,17 @@
+.gameboard {
+    display: flex;
+    flex-wrap: wrap;
+    /* width: 60%; */
+    margin: 10rem auto;
+}
+/* .gameboard div:nth-child(3n) {
+    flex-basis: 100%;
+
+} */
+.gameboard div {
+    border: solid black 0.3rem;
+    /* border-collapse: collapse; */
+    padding: 6rem;
+    flex: 1 1 15%;
+
+}
