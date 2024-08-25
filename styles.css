@@ -66,6 +66,8 @@ nav {
     border-radius: 4px;
     padding: 1rem;
     color: white;
+    /* visibility: hidden; */
+    display:none;
 }
 .choice h1 {
     
@@ -100,4 +102,9 @@ button:hover {
 }
 button:active {
     background-color: rgb(183, 183, 183);
+}
+
+.reset {
+    background-color: lightblue;
+    visibility: hidden;
 }

@@ -2,15 +2,11 @@
 
 function createPlayer(name,choice) {
     let score = 0;
+    let turn = document.querySelector(".turn");
     const getScore = () => score;
     const giveScore = function() {
         console.log(`Point for ${name}!`);
         score++;
-        if(score === 3) {
-            player1.reset;
-            player2.reset; 
-            return `The winner is ${name}!`;           
-        }
     }
     function reset() {
         score = 0;
@@ -21,59 +17,70 @@ function createPlayer(name,choice) {
 
 function gameBoard() {
     let board = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
+    const square = [];
     let topScore = 0;
     let turnFirstPlayer = true;
-    let square = [];
+    let turn = document.querySelector(".turn");
+    const game = document.querySelector(".gameboard");
+    player1 = createPlayer("player1",null);
+    player2 = createPlayer("player2",null); 
+    document.querySelector(".reset").addEventListener("click",play)
 
-    
     function buildBoard() {
-        board = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
-        square = [];
-        const game = document.querySelector(".gameboard");
         let buttonX = document.getElementById("x");
         let buttonO = document.getElementById("o");
-        player1 = createPlayer("player1",null);
-        player2 = createPlayer("player2",null); 
+        document.querySelector(".choice").style.display = "block";
+        
 
         buttonX.addEventListener("click",function() {
             player1.choice = buttonX.innerText;
             player2.choice = buttonO.innerText;   
-            document.querySelector(".choice").style.visibility = "hidden";
+            document.querySelector(".choice").style.display = "none";
+            turn.textContent = turnFirstPlayer == true ? `Player 1's (${player1.choice})  turn!` : `Player 2's (${player2.choice}) turn!`;
+
         });
         
         buttonO.addEventListener("click",function() {
             player1.choice = buttonO.innerText;
             player2.choice = buttonX.innerText;
-            document.querySelector(".choice").style.visibility = "hidden";
+            document.querySelector(".choice").style.display = "none";
+            turn.textContent = turnFirstPlayer == true ? `Player 1's (${player1.choice})  turn!` : `Player 2's (${player2.choice}) turn!`;
+
         });
         game.innerHTML = '';
+    }
+
+    function populateBoard() {
+        game.innerHTML = '';
+        board = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
+        square.splice(0, square.length)
+
+        //populate board
         for (let i = 0; i < 9; i++) {
             square.push(document.createElement("div"));
             game.appendChild(square[i]);
             square[i].textContent = board[i];
             // if (ready) {
-                document.querySelector(".turn").textContent = turnFirstPlayer == true ? "Player 1's turn!" : "Player 2's turn!";
-                square[i].addEventListener("click",function() {
+                square[i].addEventListener("click",function() {                    
                     if (turnFirstPlayer) {
                         setBoard(player1.choice,i+1);
-                        console.log(main.getBoard());
-                        checkWin();
-                        turnFirstPlayer = !turnFirstPlayer;
                     }
                     else {
                         console.log(player2.choice)
                         setBoard(player2.choice,i+1);
-                        console.log(main.getBoard());
-                        checkWin();
-                        turnFirstPlayer = !turnFirstPlayer;
                     }
+                    console.log(main.getBoard());
+                    turnFirstPlayer = !turnFirstPlayer;
+                    turn.textContent = turnFirstPlayer == true ? `Player 1's (${player1.choice}) turn!` : `Player 2's (${player2.choice}) turn!`;
+                    checkWin();
                 });
             // }
         }
-        return {square};
     }
+
     function play() {
         buildBoard();
+        populateBoard();
     }
 
     let winCombo = [
@@ -102,36 +109,60 @@ function gameBoard() {
                 switch (square[winCombo[i][0]-1].textContent) {
                     case player1.choice: 
                         player1.giveScore();
-                        // buildBoard();
-                        board = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
-                        square = [];
-                        break;
+                        if (player1.getScore() === 3) {
+                            turn.textContent = `The winner is Player 1 (${player1.choice})`;
+                            turn.style.color = "green";
+
+                            player1.reset();
+                            document.querySelector(".reset").style.visibility = "visible";
+                            break;
+                        }
+                        else {
+                            turn.textContent = `Point for Player 1 (${player1.choice})!`;
+                            turn.style.color = "green";
+
+                            setTimeout(main.populateBoard,2000);
+                            setTimeout(() => {
+                                turn.textContent = turnFirstPlayer == true ? `Player 1's (${player1.choice})  turn!` : `Player 2's (${player2.choice}) turn!`;
+                                turn.style.color = "black";
+
+                            },2000);
+                            break;
+                        }
+                        
                     case player2.choice:
-                        player2.giveScore();
-                        // buildBoard();
-                        board = [' ',' ',' ',' ',' ',' ',' ',' ',' '];
-                        square = [];
-                        break;
+                        if (player2.getScore() === 3) {
+                            turn.textContent = `The winner is Player 2 (${player2.choice})`;
+                            turn.style.color = "green";
+                            player2.reset();
+                            document.querySelector(".reset").style.visibility = "visible";
+                            break;
+                        }
+                        else {
+                            player2.giveScore();
+                            turn.textContent = `Point for Player 2 (${player2.choice})!`;
+                            turn.style.color = "green";
+
+                            setTimeout(main.populateBoard,2000);
+                            setTimeout(() => {
+                                turn.textContent = turnFirstPlayer == true ? `Player 1's (${player1.choice})  turn!` : `Player 2's (${player2.choice}) turn!`;
+                                turn.style.color = "black";
+                            },2000);
+                            break;
+                        }
                     case ' ':
                         continue;
                 }
             }
         }
     }
-    return {board,play,buildBoard,getBoard,setBoard,checkWin}
+    function endRound() {
+        game.innerHTML = '';
+        game.appendChild(document.createElement("button"));
+        play();
+    }
+    return {board,play,populateBoard,buildBoard,getBoard,setBoard,checkWin}
 }
 
 const main = gameBoard();
-
-
-
-// main.setBoard(player1.choice,9);
-// main.setBoard(player1.choice,7);
-// main.setBoard(player1.choice,8);
-
-
-
-
-
-// main.buildBoard();
 main.play();
